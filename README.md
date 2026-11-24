@@ -124,7 +124,8 @@ Node 24. `pnpm run start` executes `node dist/index.js`.
 
 ```
 src/
-  index.ts               Node entrypoint — the only file that knows about Node
+  index.ts               Node entrypoint — wires the app to the server
+  env.ts                 Startup settings validation
   app.ts                 createApp({ repository }) — runtime-neutral factory
   http.ts                Shared error shapes
   routes/
@@ -134,7 +135,8 @@ src/
     repository.ts        The data seam: list / get / search
     fixtures.ts          Reference implementation over the bundled sample data
     opportunities.json   The bundled sample data
-test/                    Vitest suites: fixtures, app, routes, OpenAPI
+test/                    Vitest suites: fixtures, app, routes, OpenAPI, settings
+  env.test.ts            Startup settings and entrypoint tests
 ```
 
 ## Maintenance

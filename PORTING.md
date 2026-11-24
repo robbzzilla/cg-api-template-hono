@@ -42,27 +42,26 @@ Three things are worth knowing before you write your implementation:
 write yours — it shows what real filtering, sorting and paging have to handle,
 including the parts that are easy to get wrong (see §4 and §5).
 
-Then wire it up in `src/index.ts`:
+Use `DATABASE_URL` for the connection string. Put it in `.env`, which is already
+gitignored (`.env.example` shows the shape), and load it with
+`node --env-file=.env dist/index.js`. This requires no dotenv dependency.
+
+`src/env.ts` validates `PORT` and the optional `DATABASE_URL` once at startup.
+An unset or empty `PORT` defaults to 3000. An empty `DATABASE_URL` counts as
+unset, and a nonempty value must be a URL with any scheme. Invalid settings
+are all reported before the server starts. `DATABASE_URL` stays optional while
+the starter uses bundled sample data. When you connect a database, remove
+`.optional()` from its schema in `src/env.ts` so a missing URL fails at startup.
+
+Pass the validated URL from `src/index.ts` to your repository factory.
 
 ```diff
 -import { fixtureRepository } from "./data/fixtures.js";
-+import { postgresRepository } from "./data/postgres.js";
++import { createPostgresRepository } from "./data/postgres.js";
 
 -const app = createApp({ repository: fixtureRepository });
-+const app = createApp({ repository: postgresRepository });
++const app = createApp({ repository: createPostgresRepository(env.DATABASE_URL) });
 ```
-
-Use `DATABASE_URL` for the connection string. Put it in `.env`, which is already
-gitignored (`.env.example` shows the shape), and load it with
-`node --env-file=.env dist/index.js`; no dotenv dependency is needed.
-
-`src/env.ts` validates `PORT` and the optional `DATABASE_URL` once at startup.
-An unset or empty `PORT` defaults to 3000; a supplied `DATABASE_URL` must be a
-URL, with any scheme allowed. Invalid settings are all reported before the
-server starts. Import `env` from `src/env.ts` to use the validated settings in
-your repository. `DATABASE_URL` remains optional while the starter uses bundled
-sample data. When you wire up a database repository, require it there and fail
-at startup if it is missing rather than on the first query.
 
 Delete `src/data/fixtures.ts` and `src/data/opportunities.json` once nothing
 imports them.

@@ -8,7 +8,7 @@ const result = z
   .safeParse({
     // `||`, not `??`: an empty PORT must not coerce to the random port 0.
     PORT: process.env.PORT || 3000,
-    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL: process.env.DATABASE_URL || undefined,
   });
 
 if (!result.success) {

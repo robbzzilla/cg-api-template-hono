@@ -27,8 +27,9 @@ describe("startup settings", () => {
     expect(env).toEqual({ PORT: 4000, DATABASE_URL: "postgresql://localhost/grants" });
   });
 
-  it.each([undefined, ""])("defaults PORT=%j to 3000 without a database", async port => {
-    vi.stubEnv("PORT", port);
+  it.each([undefined, ""])("defaults PORT=%j to 3000 without a database", async value => {
+    vi.stubEnv("PORT", value);
+    vi.stubEnv("DATABASE_URL", value);
 
     const { env } = await import("../src/env.js");
 
@@ -64,8 +65,8 @@ describe("startup settings", () => {
     }
   );
 
-  it.each(["not-a-url", ""])("rejects DATABASE_URL=%j when set", async databaseUrl => {
-    vi.stubEnv("DATABASE_URL", databaseUrl);
+  it("rejects a nonempty invalid DATABASE_URL", async () => {
+    vi.stubEnv("DATABASE_URL", "not-a-url");
 
     await expect(import("../src/env.js")).rejects.toThrow("process exited");
 
